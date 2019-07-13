@@ -34,7 +34,7 @@
 
 Exposed by `require('net-socket.io').Server`.
 
-#### new Server(path[, options])
+#### new Server(path[, options]) **NOT IMPLEMENTED**
 
 Creates a new IPC server.
 
@@ -54,7 +54,7 @@ const io = Server('/tmp/socket');
 const io = require('socket.io').Server('tmp/socket');
 ```
 
-#### new Server(port[, options])
+#### new Server(port[, options]) **NOT IMPLEMENTED**
 
 Creates a new TCP server.
 
@@ -66,12 +66,12 @@ const { Server } = require('net-socket.io');
 const io = Server(5000);
 ```
 
-#### server.sockets
+#### server.sockets **NOT IMPLEMENTED**
 
 All of the connected sockets.
 
 
-#### server.close([callback])
+#### server.close([callback]) **NOT IMPLEMENTED**
 
   - `callback` _(Function)_
 
@@ -97,7 +97,7 @@ It should be noted the `Socket` is just a thing wrapper around the actual underl
 
 The `Socket` class inherits from [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter). The `Socket` class overrides the `emit` method, and does not modify any other `EventEmitter` method. All methods documented here which also appear as `EventEmitter` methods (apart from `emit`) are implemented by `EventEmitter`, and documentation for `EventEmitter` applies.
 
-#### new Socket(path)
+#### new Socket(path) **NOT IMPLEMENTED**
 
 > You will only construct a socket when connecting as a client. When creating a `Server`, you will not create sockets yourself, the Server will create them for you.
 
@@ -117,7 +117,7 @@ const socket = require('socket.io').Socket('tmp/socket');
 
 * Returns: _(Socket)_ The newly created socket used to start the connection.
 
-#### new Socket(port[, host])
+#### new Socket(port[, host]) **NOT IMPLEMENTED**
 
 Creates a new TCP client socket.
 
@@ -129,19 +129,19 @@ const { Socket } = require('net-socket.io');
 const socket = Socket(5000);
 ```
 
-#### socket.id
+#### socket.id **NOT IMPLEMENTED**
 
   * _(String)_
 
 A unique identifier for the session.
 
-#### socket.netSocket
+#### socket.netSocket **NOT IMPLEMENTED**
 
   * _(net.Socket)_
 
 A reference to the underlying [`net.Socket`](https://nodejs.org/api/net.html#net_class_net_socket).
 
-#### socket.use(fn)
+#### socket.use(fn) **NOT IMPLEMENTED**
 
   - `fn` _(Function)_
 
@@ -158,7 +158,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.send([...args][, ack])
+#### socket.send([...args][, ack]) **NOT IMPLEMENTED**
 
   - `args`
   - `ack` _(Function)_
@@ -166,7 +166,7 @@ io.on('connection', (socket) => {
 
 Sends a `message` event. See [socket.emit(eventName[, ...args][, ack])](#socketemiteventname-args-ack).
 
-#### socket.emit(eventName[, ...args][, ack])
+#### socket.emit(eventName[, ...args][, ack]) **NOT IMPLEMENTED**
 
 *(overrides `EventEmitter.emit`)*
   - `eventName` _(String)_
@@ -199,7 +199,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.on(eventName, callback)
+#### socket.on(eventName, callback) **NOT IMPLEMENTED**
 
 *(inherited from `EventEmitter`)*
   - `eventName` _(String)_
@@ -222,14 +222,14 @@ socket.on('news', (data, callback) => {
 });
 ```
 
-#### socket.once(eventName, listener)
-#### socket.removeListener(eventName, listener)
-#### socket.removeAllListeners([eventName])
-#### socket.eventNames()
+#### socket.once(eventName, listener) **NOT IMPLEMENTED**
+#### socket.removeListener(eventName, listener) **NOT IMPLEMENTED**
+#### socket.removeAllListeners([eventName]) **NOT IMPLEMENTED**
+#### socket.eventNames() **NOT IMPLEMENTED**
 
 Inherited from `EventEmitter` (along with other methods not mentioned here). See Node.js documentation for the `events` module.
 
-#### socket.compress(value)
+#### socket.compress(value) **NOT IMPLEMENTED**
 
   - `value` _(Boolean)_ whether the following packet will be compressed
   - **Returns** `Socket` for chaining
@@ -242,7 +242,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.disconnect(close)
+#### socket.disconnect(close) **NOT IMPLEMENTED**
 
   - `close` _(Boolean)_ whether to close the underlying connection
   - **Returns** `Socket`
@@ -255,7 +255,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Flag: 'broadcast'
+#### Flag: 'broadcast' **NOT IMPLEMENTED**
 
 Sets a modifier for a subsequent event emission that the event data will only be _broadcast_ to every sockets but the sender.
 
@@ -265,7 +265,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Flag: 'volatile'
+#### Flag: 'volatile' **NOT IMPLEMENTED**
 
 Sets a modifier for a subsequent event emission that the event data may be lost if the client is not ready to receive messages (because of network slowness or other issues, or because they’re connected through long polling and is in the middle of a request-response cycle).
 
@@ -275,7 +275,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Flag: 'binary'
+#### Flag: 'binary' **NOT IMPLEMENTED**
 
 Specifies whether there is binary data in the emitted data. Increases performance when specified. Can be `true` or `false`.
 
@@ -286,7 +286,7 @@ io.on('connection', function(socket){
 });
 ```
 
-#### Event: 'disconnect'
+#### Event: 'disconnect' **NOT IMPLEMENTED**
 
   - `reason` _(String)_ the reason of the disconnection (either client or server-side)
 
@@ -300,7 +300,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Event: 'error'
+#### Event: 'error' **NOT IMPLEMENTED**
 
   - `error` _(Object)_ error object
 
@@ -314,7 +314,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Event: 'disconnecting'
+#### Event: 'disconnecting' **NOT IMPLEMENTED**
 
   - `reason` _(String)_ the reason of the disconnection (either client or server-side)
 
