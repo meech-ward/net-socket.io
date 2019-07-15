@@ -40,5 +40,38 @@ describe("Socket", function() {
       done();
     });
   });
+
+  describe("#on(data)", function() {
+    context("when the net socket emits json data that conforms to the protocol", function() {
+      it("should call on data with the json object", function(done) {
+        
+        let eventCount = 0;
+
+        function assertPacketWasPassed(packet) {
+          let netSocket = new EventEmitter();
+          let socket = Socket(netSocket);
+          socket.on(packet.eventName, data => {
+            assert.deepEqual(packet.args, data);
+            eventCount++;
+            if (eventCount === 3) {
+              done();
+            }
+          });
+          netSocket.emit('data', JSON.stringify(packet)+'\r\n');
+        }
+        assertPacketWasPassed({
+          "eventName": "event"
+        });
+        assertPacketWasPassed({
+          "eventName": "event",
+          "args": ["String"]
+        });
+        assertPacketWasPassed({
+          "eventName": "event",
+          "args": ["String", {key: 6}]
+        });
+      });
+    });
+  });
   
 });

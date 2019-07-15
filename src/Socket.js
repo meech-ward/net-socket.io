@@ -1,21 +1,30 @@
 const EventEmitter = require('events');
 const util = require('util');
 
+const JSONStream = require('json-stream');
+
 /**
  * Blacklisted events.
  *
  * @api public
  */
 
-const events = [
-  'error',
-  'connect',
+const events = new Set([
   'disconnect',
   'disconnecting',
   'newListener',
   'removeListener',
-  'ready'
-];
+
+  'close',
+  'connect',
+  'data',
+  'drain',
+  'end',
+  'error',
+  'lookup',
+  'ready',
+  'timeout',
+]);
 
 /**
  * Flags.
@@ -52,12 +61,22 @@ module.exports = function(net, fs) {
     this.netSocket.on('ready', () => this.emit('ready'));
     this.netSocket.on('error', error => this.emit('error', error));
     this.netSocket.on('close', error => this.emit('close', error));
+    this.netSocket.on('data', this.handleIncomingRawData.bind(this));
+
+    this._stream = JSONStream();
+    this._stream.on('data', this.handleIncomingParsedData.bind(this));
   }
   Socket.prototype = Object.create(EventEmitter.prototype);
 
+  Socket.prototype.handleIncomingRawData = function(data) {
+    this._stream.write(data.toString());
+  }
+  Socket.prototype.handleIncomingParsedData = function(data) {
+    emit.call(this, data.eventName, data.args);
+  }
 
   Socket.prototype.emit = function(ev) {
-    if (events.includes(ev)) {
+    if (events.has(ev)) {
       emit.apply(this, arguments);
       return this;
     }
