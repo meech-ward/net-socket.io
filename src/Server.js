@@ -1,8 +1,30 @@
 const EventEmitter = require('events');
 const util = require('util');
 
-function setupServer(net, p, emit) {
-  const server = net.createServer();
+/**
+ * Blacklisted events.
+ */
+
+const events = new Set([
+  'disconnect',
+  'disconnecting',
+  'newListener',
+  'removeListener',
+
+  'close',
+  'connection',
+  'error',
+  'listening',
+]);
+
+/**
+ * `EventEmitter#emit` reference.
+ */
+
+const emit = EventEmitter.prototype.emit;
+
+function setupServer(net, connectionListener, emit) {
+  const server = net.createServer(connectionListener);
   server.on('error', error => emit('error', error));
   server.on('listening', () => emit('listening'));
   return server;
@@ -13,7 +35,7 @@ function unlink(fs, file) {
   return fsUnlink(file);
 }
 
-module.exports = function(net, fs) {
+module.exports = function(net, fs, Socket) {
 
   function Server(p) {
     if (!new.target) {
@@ -22,12 +44,13 @@ module.exports = function(net, fs) {
     EventEmitter.call(this);
 
     this._p = p;
+    this.sockets = [];
     
     (async () => {
       if (typeof this._p === "string") {
         await unlink(fs, this._p);
       }
-      this.netServer = await setupServer(net, p, this.emit.bind(this));
+      this.netServer = await setupServer(net, this.connectionListener.bind(this), this.emit.bind(this));
       this.netServer.listen(p);
     })();
   }
@@ -43,6 +66,26 @@ module.exports = function(net, fs) {
       unlink(fs, this._p);
     }
   }
+
+  Server.prototype.connectionListener = function(client) {
+    const socket = new Socket(client);
+    this.sockets.push(socket);
+    this.emit('connection', socket);
+  }
+
+  Server.prototype.emit = function(ev) {
+    if (events.has(ev)) {
+      emit.apply(this, arguments);
+      return this;
+    }
+
+    this.sockets.forEach(socket => {
+      // socket.emit.apply(socket, Array.from(arguments));
+      emit.apply(socket, arguments);
+    });
+
+    return this;
+  };
 
   return Server;
 };

@@ -5,8 +5,6 @@ const JSONStream = require('json-stream');
 
 /**
  * Blacklisted events.
- *
- * @api public
  */
 
 const events = new Set([
@@ -28,8 +26,6 @@ const events = new Set([
 
 /**
  * Flags.
- *
- * @api private
  */
 
 const flags = [

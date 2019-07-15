@@ -46,9 +46,17 @@ describe("Server", function() {
   });
   
   describe("emit", function() {
-    xit("should forward the emit function to all sockets", function(done) {
+    it("should forward the emit function to all sockets", function(done) {
       const server = Server(1);
+      let socketCount = 0;
+
       server.on('connection', socket => {
+        socket.on('message', data => {
+          assert(data === 'data')
+          if(++socketCount === 2) {
+            done();
+          }
+        });
         if (server.sockets.length == 2) {
           server.emit('message', 'data');
         }

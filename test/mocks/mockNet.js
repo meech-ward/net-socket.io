@@ -59,6 +59,7 @@ module.exports = {
   },
   addClient(cb = ()=>{}) {
     const client = new EventEmitter();
+    client.write = ()=>{};
     cb(client);
     this.server.connectionListener(client);
     return client;
