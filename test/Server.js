@@ -15,11 +15,14 @@ describe("Server", function() {
     assert.deepEqual(Object.getPrototypeOf(server1), Object.getPrototypeOf(server2));
   });
   context("when initialized with a port", function() {
-    it("should create a new tcp server", function() {
+    it("should create a new tcp server", function(done) {
       const server = Server(80);
-      assert.equal(mockNet.createServerCallCount, 1);
-      assert.equal(mockNet.server.listens.length, 1);
-      assert.equal(mockNet.server.listens[0], 80);
+      server.on('listening', () => {
+        assert.equal(mockNet.createServerCallCount, 1);
+        assert.equal(mockNet.server.listens.length, 1);
+        assert.equal(mockNet.server.listens[0], 80);
+        done();
+      });
     });
   });
   it("should not try to remove any existing file at that path", function() {
@@ -27,52 +30,90 @@ describe("Server", function() {
     assert.equal(mockfs.unlinks.length, 0);
   });
   context("when initialized with a path", function() {
-    it("should create a new ipc server", function() {
+    it("should create a new ipc server", function(done) {
       const server = Server('path');
-      assert.equal(mockNet.createServerCallCount, 1);
-      assert.equal(mockNet.server.listens.length, 1);
-      assert.equal(mockNet.server.listens[0], 'path');
+      server.on('listening', () => {
+        assert.equal(mockNet.createServerCallCount, 1);
+        assert.equal(mockNet.server.listens.length, 1);
+        assert.equal(mockNet.server.listens[0], 'path');
+        done();
+      });
     });
-    it("should try to remove any existing file at that path", function() {
+    it("should try to remove any existing file at that path", function(done) {
       const server = Server('path');
-      assert.equal(mockfs.unlinks.length, 1);
-      assert.equal(mockfs.unlinks[0], 'path');
-    });
-  });
-
-  describe("#close", function() {
-    it("should call close on the server", function() {
-      const server = Server(80);
-      server.close();
-      assert.equal(mockNet.server.closeCallCount, 1);
-    });
-    context("when called on an ipc server", function() {
-      it("should remove the socket file", function() {
-        let server = Server('path');
-        mockfs.reset();
-        server.close();
+      server.on('listening', () => {
         assert.equal(mockfs.unlinks.length, 1);
         assert.equal(mockfs.unlinks[0], 'path');
-
-        mockfs.reset();
-
-        server = Server(80);
-        server.close();
-        assert.equal(mockfs.unlinks.length, 0);
+        done();
       });
     });
   });
 
-  describe("#on('error'", function() {
-    context("when there is an error from the net server", function() {
-      it("should be emitted from the server", function() {
+  describe("#close", function() {
+    it("should call close on the server", function(done) {
+      const server = Server(80);
+      server.on('listening', () => {
+        server.close();
+        assert.equal(mockNet.server.closeCallCount, 1);
+        done();
+      });
+    });
+    it("should do nothing if listening hasn't been called yet", function() {
+      const server = Server('path');
+      server.close();
+      assert.equal(mockNet.server.closeCallCount, 0);
+    });
+    context("when called on an ipc server", function() {
+      it("should remove the socket file", function(done) {
         let server = Server('path');
-        let errorData;
-        server.on('error', function(error) {
-          errorData = error;
+        server.on('listening', () => {
+          mockfs.reset();
+          server.close();
+          assert.equal(mockfs.unlinks.length, 1);
+          assert.equal(mockfs.unlinks[0], 'path');
+  
+          mockfs.reset();
+  
+          server = Server(80);
+          server.close();
+          assert.equal(mockfs.unlinks.length, 0);
+          done();
         });
-        mockNet.server.emitError("err");
-        assert.equal(errorData, "err");
+      });
+    });
+  });
+
+  describe("#on('listening')", function() {
+    context("when the listening event is emitted from the net server", function() {
+      it("should be emitted from the server", function(done) {
+        let server = Server('path');
+        let count = 0;
+        server.on('listening', () => {
+          count++;
+          if (count < 5) {
+            mockNet.server.emitListening();
+          } else {
+            assert(true);
+            done();
+          }
+        });
+      })
+    })
+  });
+
+  describe("#on('error')", function() {
+    context("when there is an error from the net server", function() {
+      it("should be emitted from the server", function(done) {
+        let server = Server('path');
+        server.on('listening', () => {
+          let errorData;
+          server.on('error', function(error) {
+            errorData = error;
+          });
+          mockNet.server.emitError("err");
+          assert.equal(errorData, "err");
+          done();
+        });
       })
     })
   });

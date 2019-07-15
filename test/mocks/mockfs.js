@@ -3,7 +3,8 @@ module.exports = {
     this.unlinks = [];
   },
   unlinks: [],
-  unlinkSync(path) {
+  unlink(path, cb) {
     this.unlinks.push(path);
+    cb();
   }
 }

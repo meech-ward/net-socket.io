@@ -1,18 +1,16 @@
 const EventEmitter = require('events');
+const util = require('util');
 
-function setupServer(net, p, err) {
+function setupServer(net, p, emit) {
   const server = net.createServer();
-  server.on('error', err);
-  server.listen(p);
+  server.on('error', error => emit('error', error));
+  server.on('listening', () => emit('listening'));
   return server;
 }
 
-function unlinkFile(fs, file) {
-  try {
-    fs.unlinkSync(file);
-  } catch (e) {
-    // console.log(e);
-  }
+function unlink(fs, file) {
+  const fsUnlink = util.promisify(fs.unlink.bind(fs));
+  return fsUnlink(file);
 }
 
 module.exports = function(net, fs) {
@@ -24,19 +22,25 @@ module.exports = function(net, fs) {
     EventEmitter.call(this);
 
     this._p = p;
-    if (typeof this._p === "string") {
-      unlinkFile(fs, this._p);
-    }
-
-    this.netServer = setupServer(net, p, error => this.emit('error', error));
+    
+    (async () => {
+      if (typeof this._p === "string") {
+        await unlink(fs, this._p);
+      }
+      this.netServer = await setupServer(net, p, this.emit.bind(this));
+      this.netServer.listen(p);
+    })();
   }
 
   Server.prototype = Object.create(EventEmitter.prototype);
 
-  Server.prototype.close = function() {
+  Server.prototype.close = async function() {
+    if (!this.netServer) {
+      return;
+    }
     this.netServer.close();
     if (typeof this._p === "string") {
-      unlinkFile(fs, this._p);
+      unlink(fs, this._p);
     }
   }
 

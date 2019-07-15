@@ -8,12 +8,16 @@ function Server() {
 Server.prototype = Object.create(EventEmitter.prototype);
 Server.prototype.listen = function(p) {
   this.listens.push(p);
+  this.emit('listening');
 }
 Server.prototype.close = function() {
   this.closeCallCount++;
 }
 Server.prototype.emitError = function(error) {
   this.emit('error', error);
+}
+Server.prototype.emitListening = function() {
+  this.emit('listening');
 }
 
 module.exports = {
@@ -25,6 +29,6 @@ module.exports = {
   },
   reset() {
     this.createServerCallCount = 0;
-    this.server = null;
+    this.server = new Server();
   }
 }
