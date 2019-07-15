@@ -61,5 +61,19 @@ describe("Server", function() {
         assert.equal(mockfs.unlinks.length, 0);
       });
     });
-  })
+  });
+
+  describe("#on('error'", function() {
+    context("when there is an error from the net server", function() {
+      it("should be emitted from the server", function() {
+        let server = Server('path');
+        let errorData;
+        server.on('error', function(error) {
+          errorData = error;
+        });
+        mockNet.server.emitError("err");
+        assert.equal(errorData, "err");
+      })
+    })
+  });
 });

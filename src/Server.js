@@ -1,6 +1,8 @@
+const EventEmitter = require('events');
 
-function setupServer(net, p) {
+function setupServer(net, p, err) {
   const server = net.createServer();
+  server.on('error', err);
   server.listen(p);
   return server;
 }
@@ -19,14 +21,17 @@ module.exports = function(net, fs) {
     if (!new.target) {
       return new Server(p);
     }
+    EventEmitter.call(this);
 
     this._p = p;
     if (typeof this._p === "string") {
       unlinkFile(fs, this._p);
     }
 
-    this.netServer = setupServer(net, p);
+    this.netServer = setupServer(net, p, error => this.emit('error', error));
   }
+
+  Server.prototype = Object.create(EventEmitter.prototype);
 
   Server.prototype.close = function() {
     this.netServer.close();
