@@ -1,5 +1,7 @@
 const assert = require('assert').strict;
 
+const EventEmitter = require('events');
+
 const mockNet = require('./mocks/mockNet');
 const mockfs = require('./mocks/mockfs');
 const Socket = require('../src/Socket')(mockNet, mockfs);
@@ -47,6 +49,14 @@ describe("Socket", function() {
     });
   });
 
+  context("when initialized with an event emitter", function() {
+    it("should set that as its netSocket", function() {
+      const netSocket = new EventEmitter();
+      const socket = Socket(netSocket);
+      assert.equal(socket.netSocket, netSocket);
+    });
+  });
+
   describe("#on('ready')", function() {
     context("when the connect event is emitted from the net socket", function() {
       it("should be emitted from the socket", function(done) {
@@ -81,4 +91,6 @@ describe("Socket", function() {
       })
     })
   });
+
+  
 });

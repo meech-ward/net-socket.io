@@ -1,9 +1,10 @@
 const EventEmitter = require('events');
 
-function Server() {
+function Server(connectionListener = ()=>{}) {
   EventEmitter.call(this);
   this.listens = [];
   this.closeCallCount = 0;
+  this.connectionListener = connectionListener;
 }
 Server.prototype = Object.create(EventEmitter.prototype);
 Server.prototype.listen = function(p) {
@@ -35,9 +36,9 @@ module.exports = {
     this.server = new Server();
   },
   createServerCallCount: 0,
-  createServer() {
+  createServer(connectionListener) {
     this.createServerCallCount++;
-    this.server = new Server();
+    this.server = new Server(connectionListener);
     return this.server;
   },
   clients: [],
@@ -55,5 +56,11 @@ module.exports = {
     this.clients.forEach(socket => {
       socket.emit(event, data);
     })
+  },
+  addClient(cb = ()=>{}) {
+    const client = new EventEmitter();
+    cb(client);
+    this.server.connectionListener(client);
+    return client;
   }
 }
