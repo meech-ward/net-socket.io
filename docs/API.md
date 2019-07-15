@@ -2,9 +2,11 @@
 ## Table of Contents
 
   - [Class: Server](#server)
-    - [new Server(path[, options])](#new-serverpath-options)
-    - [new Server(port[, options])](#new-serverport-options)
+    - [new Server(path)](#new-serverpath)
+    - [new Server(port)](#new-serverport)
     - [new Server(options)](#new-serveroptions)
+    - [new Server(options)](#new-serveroptions)
+    - [server.netServer](#servernetserver)
     - [server.sockets](#serversockets)
     - [server.close([callback])](#serverclosecallback)
   - [Class: Socket](#socket)
@@ -34,16 +36,11 @@
 
 Exposed by `require('net-socket.io').Server`.
 
-#### new Server(path[, options]) **NOT IMPLEMENTED**
+#### new Server(path) **NOT IMPLEMENTED**
 
 Creates a new IPC server.
 
   - `path` _(String)_: The complete path where a socket file will be created. (IPC)
-  - `options` _(Object)_
-    - `allowHalfOpen` _(Boolean)_: Indicates whether half-opened TCP connections are allowed. Default: false.
-    - `pauseOnConnect` _(Boolean)_: Indicates whether the socket should be paused on incoming connections. Default: false.
-    - `backlog` _(Number)_: specify the maximum length of the queue of pending connections. The actual length will be determined by the OS through `sysctl` settings such as `tcp_max_syn_backlog` and `somaxconn` on Linux. The default value of this parameter is 511 (not 512).
-    - `host` _(String)_: Only applies when `port` is set. If host is omitted, the server will accept connections on the unspecified IPv6 address (::) when IPv6 is available, or the unspecified IPv4 address (0.0.0.0) otherwise.
 
 Works with and without `new`:
 
@@ -54,22 +51,48 @@ const io = Server('/tmp/socket');
 const io = require('socket.io').Server('tmp/socket');
 ```
 
-#### new Server(port[, options]) **NOT IMPLEMENTED**
+#### new Server(port) **NOT IMPLEMENTED**
 
 Creates a new TCP server.
 
   - `port` _(Number)_: The port that will be opened for TCP connections.
-  - See [above](#new-serverhttpserver-options) for available options.
 
 ```js
 const { Server } = require('net-socket.io');
 const io = Server(5000);
 ```
 
+#### new Server(options) **NOT IMPLEMENTED**
+
+Creates a new TCP or IPC server depending on the options.
+
+ - `options` _(Object)_
+  - `host` _(String)_
+  - `path` _(String)_ Will be ignored if port is specified. See [Identifying paths for IPC connections.](https://nodejs.org/api/net.html#net_identifying_paths_for_ipc_connections)
+  - `backlog` _(Number)_ Common parameter of server.listen() functions.
+  - `exclusive` _(Boolean)_ Default: false
+  - `readableAll` _(Boolean)_ For IPC servers makes the pipe readable for all users. Default: false
+  - `writableAll` _(Boolean)_ For IPC servers makes the pipe writable for all users. Default: false
+  - `ipv6Only` _(Boolean)_ For TCP servers, setting ipv6Only to true will disable dual-stack support, i.e., binding to host :: won't make 0.0.0.0 be bound. Default: false.
+  - `allowHalfOpen` _(Boolean)_: Indicates whether half-opened TCP connections are allowed. Default: false.
+  - `pauseOnConnect` _(Boolean)_: Indicates whether the socket should be paused on incoming connections. Default: false.
+
+```js
+const { Server } = require('net-socket.io');
+const io = Server({
+  host: 'localhost',
+  port: 80,
+  exclusive: true
+});
+```
+
+#### server.netServer **NOT IMPLEMENTED**
+
+The underlying server from the [`net`](https://nodejs.org/api/net.html#net_net_createserver_options_connectionlistener) library.
+
 #### server.sockets **NOT IMPLEMENTED**
 
 All of the connected sockets.
-
 
 #### server.close([callback]) **NOT IMPLEMENTED**
 
