@@ -20,15 +20,40 @@ Server.prototype.emitListening = function() {
   this.emit('listening');
 }
 
+function Socket(p, h) {
+  EventEmitter.call(this);
+  this._p = p;
+  this._h = h;
+}
+Socket.prototype = Object.create(EventEmitter.prototype);
+
 module.exports = {
+  reset() {
+    this.createServerCallCount = 0;
+    this.createConnectionCallCount = 0;
+    this.clients = [];
+    this.server = new Server();
+  },
   createServerCallCount: 0,
   createServer() {
     this.createServerCallCount++;
     this.server = new Server();
     return this.server;
   },
-  reset() {
-    this.createServerCallCount = 0;
-    this.server = new Server();
+  clients: [],
+  createConnectionCallCount: 0,
+  createConnection(p, host) {
+    this.createConnectionCallCount++;
+    const socket = new Socket(p, host);
+    this.clients.push(socket);
+    setTimeout(() => {
+      socket.emit('ready');
+    }, 0);
+    return socket;
+  },
+  emitSockets(event, data) {
+    this.clients.forEach(socket => {
+      socket.emit(event, data);
+    })
   }
 }
