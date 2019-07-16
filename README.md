@@ -1,12 +1,8 @@
 # Net Socket IO
 
-Heavily Based on [https://github.com/socketio/socket.io]
+Net-Socket.IO enables real-time, bidirectional and event-based communication for low-level IPC and TCP sockets. It is a small wrapper around node's [`net`](https://nodejs.org/api/events.html) library, that makes low-level socket programming easy.
 
-* This should inherit the same interface as socket.io
-* Only for ipc sockets
-* Actually could be for basic tcp sockets as well
-* Just not HTTP WebSockets
-* Creates a new TCP or IPC server.
+Heavily Based on [https://github.com/socketio/socket.io] and [Event Emitters](https://nodejs.org/api/events.html)
 
 ## Examples
 
@@ -31,6 +27,14 @@ const { Socket } = require('ipc-socket-io');
 const socketFile = '/tmp/socket';
 const socket = Socket(socketFile);
 
-socket.emit('request', /* */);
-socket.on('reply', function(data){ /* */ }); // listen to the event
+socket.on('ready', () => {
+  socket.emit('request', /* */);
+  socket.on('reply', (data) => { /* */ }); // listen to the event
+});
 ```
+
+Look in the [examples](https://github.com/meech-ward/net-socket.io/tree/master/examples) folder for complete examples.
+
+## Documentation
+
+Check out the [API documentation](https://github.com/meech-ward/net-socket.io/blob/master/docs/API.md) for more details.
