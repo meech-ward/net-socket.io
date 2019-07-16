@@ -55,7 +55,7 @@ module.exports = function(net) {
 
     this.netSocket.on('ready', () => this.emit('ready'));
     this.netSocket.on('error', error => this.emit('error', error));
-    this.netSocket.on('close', error => this.emit('close', error));
+    this.netSocket.on('close', () => this.emit('close'));
     this.netSocket.on('data', this.handleIncomingRawData.bind(this));
 
     this._stream = JSONStream();
@@ -69,6 +69,9 @@ module.exports = function(net) {
   Socket.prototype.handleIncomingParsedData = function(data) {
     const args = data.args || [];
     emit.apply(this, [data.eventName, ...args]);
+  }
+  Socket.prototype.close = function() {
+    this.netSocket.close();
   }
 
   Socket.prototype.emit = function(ev) {

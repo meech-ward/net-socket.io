@@ -92,5 +92,15 @@ describe("Socket", function() {
     })
   });
 
-  
+  describe('close', function() {
+    it("should call close on the net socket", function(done) {
+      const netSocket = new EventEmitter();
+      netSocket.close = function() {
+        done();
+      };
+      const socket = new Socket(netSocket);
+      socket.close();
+    })
+  })
+
 });

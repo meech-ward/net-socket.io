@@ -9,6 +9,8 @@
     - [server.netServer](#servernetserver)
     - [server.sockets](#serversockets)
     - [server.close([callback])](#serverclosecallback)
+    - [Event: 'error'](#event-error)
+    - [Event: 'listening'](#event-listening)
   - [Class: Socket](#socket)
     - [new Socket(path)](#new-socketpath)
     - [new Socket(port[, host])](#new-socketport-host)
@@ -36,7 +38,7 @@
 
 Exposed by `require('net-socket.io').Server`.
 
-#### new Server(path) **NOT IMPLEMENTED**
+#### new Server(path)
 
 Creates a new IPC server.
 
@@ -51,7 +53,7 @@ const io = Server('/tmp/socket');
 const io = require('socket.io').Server('tmp/socket');
 ```
 
-#### new Server(port) **NOT IMPLEMENTED**
+#### new Server(port) 
 
 Creates a new TCP server.
 
@@ -86,15 +88,15 @@ const io = Server({
 });
 ```
 
-#### server.netServer **NOT IMPLEMENTED**
+#### server.netServer 
 
 The underlying server from the [`net`](https://nodejs.org/api/net.html#net_net_createserver_options_connectionlistener) library.
 
-#### server.sockets **NOT IMPLEMENTED**
+#### server.sockets 
 
 All of the connected sockets.
 
-#### server.close([callback]) **NOT IMPLEMENTED**
+#### server.close([callback]) 
 
   - `callback` _(Function)_
 
@@ -108,6 +110,22 @@ const io = Server(PORT);
 io.close(); // Close current server
 ```
 
+#### Event: 'error'
+
+  - `error` _(Object)_ error object
+
+Fired when an error occurs.
+
+```js
+io.on('error', (error) => {
+  // ...
+});
+```
+
+#### Event: 'listening'
+
+Emitted when the server has been bound after being initialized.
+
 ---
 
 ### Socket
@@ -120,7 +138,7 @@ It should be noted the `Socket` is just a thing wrapper around the actual underl
 
 The `Socket` class inherits from [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter). The `Socket` class overrides the `emit` method, and does not modify any other `EventEmitter` method. All methods documented here which also appear as `EventEmitter` methods (apart from `emit`) are implemented by `EventEmitter`, and documentation for `EventEmitter` applies.
 
-#### new Socket(path) **NOT IMPLEMENTED**
+#### new Socket(path) 
 
 > You will only construct a socket when connecting as a client. When creating a `Server`, you will not create sockets yourself, the Server will create them for you.
 
@@ -140,7 +158,7 @@ const socket = require('socket.io').Socket('tmp/socket');
 
 * Returns: _(Socket)_ The newly created socket used to start the connection.
 
-#### new Socket(port[, host]) **NOT IMPLEMENTED**
+#### new Socket(port[, host]) 
 
 Creates a new TCP client socket.
 
@@ -158,7 +176,7 @@ const socket = Socket(5000);
 
 A unique identifier for the session.
 
-#### socket.netSocket **NOT IMPLEMENTED**
+#### socket.netSocket
 
   * _(net.Socket)_
 
@@ -265,18 +283,9 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.disconnect(close) **NOT IMPLEMENTED**
+#### socket.end() **NOT IMPLEMENTED**
 
-  - `close` _(Boolean)_ whether to close the underlying connection
-  - **Returns** `Socket`
-
-Disconnects this client. If value of close is `true`, closes the underlying connection. Otherwise, it just disconnects the namespace.
-
-```js
-io.on('connection', (socket) => {
-  setTimeout(() => socket.disconnect(true), 5000);
-});
-```
+Half-closes the socket. i.e., it sends a FIN packet. It is possible the server will still send some data.
 
 #### Flag: 'broadcast' **NOT IMPLEMENTED**
 
@@ -323,33 +332,14 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### Event: 'error' **NOT IMPLEMENTED**
+#### Event: 'error' 
 
   - `error` _(Object)_ error object
 
 Fired when an error occurs.
 
 ```js
-io.on('connection', (socket) => {
-  socket.on('error', (error) => {
-    // ...
-  });
+socket.on('error', (error) => {
+  // ...
 });
 ```
-
-#### Event: 'disconnecting' **NOT IMPLEMENTED**
-
-  - `reason` _(String)_ the reason of the disconnection (either client or server-side)
-
-Fired when the client is going to be disconnected (but hasn't yet).
-
-```js
-io.on('connection', (socket) => {
-  socket.on('disconnecting', (reason) => {
-    let rooms = Object.keys(socket.rooms);
-    // ...
-  });
-});
-```
-
-These are reserved events (along with `connect`, `newListener` and `removeListener`) which cannot be used as event names.

@@ -62,6 +62,9 @@ module.exports = {
     client.write = function() {
       this.args = Array.from(arguments);
     };
+    client.close = function() {
+      client.emit('close');
+    }
     cb(client);
     this.server.connectionListener(client);
     return client;

@@ -70,6 +70,11 @@ module.exports = function(net, fs, Socket) {
   Server.prototype.connectionListener = function(client) {
     const socket = new Socket(client);
     this.sockets.push(socket);
+
+    socket.on('close', () => {
+      this.sockets = this.sockets.filter(s => s !== socket);
+    });
+
     this.emit('connection', socket);
   }
 

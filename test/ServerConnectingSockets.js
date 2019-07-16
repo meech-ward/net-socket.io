@@ -44,6 +44,27 @@ describe("Server", function() {
       });
     });
   });
+
+  context("when a client disconnects", function() {
+    it('should be removed from the sockets list', function(done) {
+      const server = Server(1);
+      let socketCount = 0;
+
+      server.on('connection', socket => {
+        socket.on('close', function() {
+          assert.equal(server.sockets.length, 1);
+          done();
+        });
+        if (server.sockets.length == 2) {
+          socket.close();
+        }
+      });
+      server.on('listening', () => {
+        mockNet.addClient();
+        mockNet.addClient();
+      });
+    });
+  })
   
   describe("emit", function() {
     it("should forward the emit function to all sockets", function(done) {
