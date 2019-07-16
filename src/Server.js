@@ -50,7 +50,11 @@ module.exports = function(net, fs, Socket) {
     
     (async () => {
       if (typeof this._p === "string") {
-        await unlink(fs, this._p);
+        try {
+          await unlink(fs, this._p);
+        } catch (err) {
+          // do nothing
+        }
       }
       this.netServer = await setupServer(net, this._connectionListener.bind(this), this.emit.bind(this));
       this.netServer.listen(p);
