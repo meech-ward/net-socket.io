@@ -81,7 +81,7 @@ module.exports = function(net, fs, Socket) {
 
     const args = arguments;
     this.sockets.forEach(socket => {
-      emit.apply(socket, args);
+      socket.emit.apply(socket, args);
     });
 
     return this;
