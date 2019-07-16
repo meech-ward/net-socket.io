@@ -79,9 +79,9 @@ module.exports = function(net, fs, Socket) {
       return this;
     }
 
+    const args = arguments;
     this.sockets.forEach(socket => {
-      // socket.emit.apply(socket, Array.from(arguments));
-      emit.apply(socket, arguments);
+      emit.apply(socket, args);
     });
 
     return this;

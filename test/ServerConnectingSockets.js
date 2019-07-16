@@ -53,12 +53,21 @@ describe("Server", function() {
       server.on('connection', socket => {
         socket.on('message', data => {
           assert(data === 'data')
-          if(++socketCount === 2) {
+          if(++socketCount === 4) {
+            done();
+          }
+        });
+        socket.on('anothermessage', (data, flag, number) => {
+          assert(data.message === 'more data');
+          assert(flag);
+          assert.equal(number, 69)
+          if(++socketCount === 4) {
             done();
           }
         });
         if (server.sockets.length == 2) {
           server.emit('message', 'data');
+          server.emit('anothermessage', {message: 'more data'}, true, 69);
         }
       });
       server.on('listening', () => {

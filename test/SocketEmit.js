@@ -50,8 +50,13 @@ describe("Socket", function() {
         function assertPacketWasPassed(packet) {
           let netSocket = new EventEmitter();
           let socket = Socket(netSocket);
-          socket.on(packet.eventName, data => {
-            assert.deepEqual(packet.args, data);
+          socket.on(packet.eventName, function(data) {
+            // assert.deepEqual(packet.args[0], data);
+            let i = 0;
+            const args = packet.args || [];
+            for (const arg of args) {
+              assert.deepEqual(arguments[i++], arg);
+            }
             eventCount++;
             if (eventCount === 3) {
               done();
@@ -64,7 +69,7 @@ describe("Socket", function() {
         });
         assertPacketWasPassed({
           "eventName": "event",
-          "args": ["String"]
+          "args": ["String", true]
         });
         assertPacketWasPassed({
           "eventName": "event",

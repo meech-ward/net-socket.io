@@ -1,5 +1,4 @@
 const EventEmitter = require('events');
-const util = require('util');
 
 const JSONStream = require('json-stream');
 
@@ -41,7 +40,7 @@ const flags = [
 
 const emit = EventEmitter.prototype.emit;
 
-module.exports = function(net, fs) {
+module.exports = function(net) {
   function Socket(p, host) {
     if (!new.target) {
       return new Socket(p, host);
@@ -68,7 +67,8 @@ module.exports = function(net, fs) {
     this._stream.write(data.toString());
   }
   Socket.prototype.handleIncomingParsedData = function(data) {
-    emit.call(this, data.eventName, data.args);
+    const args = data.args || [];
+    emit.apply(this, [data.eventName, ...args]);
   }
 
   Socket.prototype.emit = function(ev) {
