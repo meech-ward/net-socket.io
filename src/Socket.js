@@ -41,6 +41,14 @@ const flags = [
 const emit = EventEmitter.prototype.emit;
 
 module.exports = function(net) {
+
+  /**
+   * Represents a connected client.
+   * The server will create one of these for each client when using the server interface.
+   * Create one of these manually to connect to a server as a client
+   * @param {String, Number} p The path or port of the server.
+   * @param {String} host The host name of the server, only applies to TCP servers.
+   */
   function Socket(p, host) {
     if (!new.target) {
       return new Socket(p, host);
@@ -56,24 +64,23 @@ module.exports = function(net) {
     this.netSocket.on('ready', () => this.emit('ready'));
     this.netSocket.on('error', error => this.emit('error', error));
     this.netSocket.on('close', () => this.emit('close'));
-    this.netSocket.on('data', this.handleIncomingRawData.bind(this));
+    this.netSocket.on('data', this._handleIncomingRawData.bind(this));
 
     this._stream = JSONStream();
-    this._stream.on('data', this.handleIncomingParsedData.bind(this));
+    this._stream.on('data', this._handleIncomingParsedData.bind(this));
   }
   Socket.prototype = Object.create(EventEmitter.prototype);
 
-  Socket.prototype.handleIncomingRawData = function(data) {
-    this._stream.write(data.toString());
-  }
-  Socket.prototype.handleIncomingParsedData = function(data) {
-    const args = data.args || [];
-    emit.apply(this, [data.eventName, ...args]);
-  }
+  /**
+   * Closes the socket. Sends a FIN packet.
+   */
   Socket.prototype.close = function() {
     this.netSocket.close();
   }
 
+  /**
+   * Emit data to the server or client.
+   */
   Socket.prototype.emit = function(ev) {
     if (events.has(ev)) {
       emit.apply(this, arguments);
@@ -105,6 +112,22 @@ module.exports = function(net) {
 
     return this;
   };
+
+  /**
+   * Handles incoming socket data. NEVER call this directly
+   */
+  Socket.prototype._handleIncomingRawData = function(data) {
+    this._stream.write(data.toString());
+  }
+
+  /**
+   * Handles incoming parsed json data. NEVER call this directly
+   */
+  Socket.prototype._handleIncomingParsedData = function(data) {
+    const args = data.args || [];
+    emit.apply(this, [data.eventName, ...args]);
+  }
+  
 
   return Socket;
 };

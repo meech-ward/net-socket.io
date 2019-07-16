@@ -4,7 +4,6 @@ const util = require('util');
 /**
  * Blacklisted events.
  */
-
 const events = new Set([
   'disconnect',
   'disconnecting',
@@ -20,7 +19,6 @@ const events = new Set([
 /**
  * `EventEmitter#emit` reference.
  */
-
 const emit = EventEmitter.prototype.emit;
 
 function setupServer(net, connectionListener, emit) {
@@ -37,6 +35,10 @@ function unlink(fs, file) {
 
 module.exports = function(net, fs, Socket) {
 
+  /**
+   * Create a new IPC or TCP server.
+   * @param {String, Number} p The port or path for the server.
+   */
   function Server(p) {
     if (!new.target) {
       return new Server(p);
@@ -50,13 +52,16 @@ module.exports = function(net, fs, Socket) {
       if (typeof this._p === "string") {
         await unlink(fs, this._p);
       }
-      this.netServer = await setupServer(net, this.connectionListener.bind(this), this.emit.bind(this));
+      this.netServer = await setupServer(net, this._connectionListener.bind(this), this.emit.bind(this));
       this.netServer.listen(p);
     })();
   }
 
   Server.prototype = Object.create(EventEmitter.prototype);
 
+  /**
+   * Close the server
+   */
   Server.prototype.close = async function() {
     if (!this.netServer) {
       return;
@@ -67,17 +72,10 @@ module.exports = function(net, fs, Socket) {
     }
   }
 
-  Server.prototype.connectionListener = function(client) {
-    const socket = new Socket(client);
-    this.sockets.push(socket);
 
-    socket.on('close', () => {
-      this.sockets = this.sockets.filter(s => s !== socket);
-    });
-
-    this.emit('connection', socket);
-  }
-
+  /**
+   * Call this function to emit to all connected clients.
+   */
   Server.prototype.emit = function(ev) {
     if (events.has(ev)) {
       emit.apply(this, arguments);
@@ -91,6 +89,20 @@ module.exports = function(net, fs, Socket) {
 
     return this;
   };
+
+  /**
+   * Gets called when a new client connects. NEVER call this directly.
+   */
+  Server.prototype._connectionListener = function(client) {
+    const socket = new Socket(client);
+    this.sockets.push(socket);
+
+    socket.on('close', () => {
+      this.sockets = this.sockets.filter(s => s !== socket);
+    });
+
+    this.emit('connection', socket);
+  }
 
   return Server;
 };
