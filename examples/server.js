@@ -1,5 +1,5 @@
 const {Server} = require('../index.js');
-const socketPath = '/tmp/socket'; // file for IPC socket, or port number for TCP socket.
+const socketPath = '/tmp/socket'; 
 const io = Server(socketPath);
 
 io.on('connection', function(socket) {
