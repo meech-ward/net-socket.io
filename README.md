@@ -2,7 +2,7 @@
 
 Net-Socket.IO enables real-time, bidirectional and event-based communication for low-level IPC and TCP sockets. It is a small wrapper around node's [`net`](https://nodejs.org/api/events.html) library, that makes low-level socket programming easy.
 
-Heavily Based on [https://github.com/socketio/socket.io] and [Event Emitters](https://nodejs.org/api/events.html).
+Heavily Based on [socket.io](https://github.com/socketio/socket.io) and [Event Emitters](https://nodejs.org/api/events.html).
 
 For more information on the motivation behind this library, check out my [blog post](https://sammeechward.com/net-socket-io/) on the subject.
 
