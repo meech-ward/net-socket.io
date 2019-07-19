@@ -207,12 +207,12 @@ io.on('connection', (socket) => {
 
 Sends a `message` event. See [socket.emit(eventName[, ...args][, ack])](#socketemiteventname-args-ack).
 
-#### socket.emit(eventName[, ...args][, ack]) **NOT IMPLEMENTED**
+#### socket.emit(eventName[, ...args][, ack]) 
 
 *(overrides `EventEmitter.emit`)*
   - `eventName` _(String)_
   - `args`
-  - `ack` _(Function)_
+  - `ack` _(Function)_ **NOT IMPLEMENTED**
   - **Returns** `Socket`
 
 Emits an event to the socket identified by the string name. Any other parameters can be included. All serializable datastructures are supported, including `Buffer`.
@@ -240,7 +240,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.on(eventName, callback) **NOT IMPLEMENTED**
+#### socket.on(eventName, callback)
 
 *(inherited from `EventEmitter`)*
   - `eventName` _(String)_
@@ -263,10 +263,10 @@ socket.on('news', (data, callback) => {
 });
 ```
 
-#### socket.once(eventName, listener) **NOT IMPLEMENTED**
-#### socket.removeListener(eventName, listener) **NOT IMPLEMENTED**
-#### socket.removeAllListeners([eventName]) **NOT IMPLEMENTED**
-#### socket.eventNames() **NOT IMPLEMENTED**
+#### socket.once(eventName, listener) 
+#### socket.removeListener(eventName, listener) 
+#### socket.removeAllListeners([eventName])
+#### socket.eventNames() 
 
 Inherited from `EventEmitter` (along with other methods not mentioned here). See Node.js documentation for the `events` module.
 
@@ -283,7 +283,7 @@ io.on('connection', (socket) => {
 });
 ```
 
-#### socket.end() **NOT IMPLEMENTED**
+#### socket.end() 
 
 Half-closes the socket. i.e., it sends a FIN packet. It is possible the server will still send some data.
 
@@ -318,7 +318,7 @@ io.on('connection', function(socket){
 });
 ```
 
-#### Event: 'disconnect' **NOT IMPLEMENTED**
+#### Event: 'disconnect' 
 
   - `reason` _(String)_ the reason of the disconnection (either client or server-side)
 
