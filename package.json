@@ -1,12 +1,12 @@
 {
   "name": "net-socket.io",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "npx mocha"
   },
-  "keywords": ["ipc", "tcp", "socket"],
+  "keywords": ["ipc", "tcp", "socket", "unix", "net"],
   "author": "Sam Meech-Ward",
   "license": "ISC",
   "dependencies": {
